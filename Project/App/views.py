@@ -62,7 +62,6 @@ class BooksView(APIView):
 
         return Response(serializer.data)
     
-    @csrf_protect
     def post(self, request):
         data= request.data
         serializer= Bookserializers(data= data)
