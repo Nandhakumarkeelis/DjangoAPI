@@ -2,27 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import *
 
-class ColorSerializers(serializers.ModelSerializer):
-    class Meta:
-        model= Color
-        fields= ['Color_Name']
-
-
-class PersonSerializers(serializers.ModelSerializer):
-
-    Color= ColorSerializers()
-
-    class Meta:
-        model= Person
-        fields= '__all__'
-
-
-    def validate(self, data):
-        if data['Age']< 18:
-            raise serializers.ValidationError('Age Should be Greater than 18')
-        
-        return data
-    
 class Loginserializers(serializers.ModelSerializer):
 
     username= serializers.CharField()

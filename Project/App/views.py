@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from django.views.decorators.csrf import csrf_protect
 from .models import *
 from .serializers import *
 
@@ -28,10 +27,11 @@ class LoginView(APIView):
         else:
             return Response({'message': "Unauthorized User!"})
 
-@api_view(['GET']) 
-def LogoutView(request):
-    logout(request)
-    return Response({'message': 'User Logout recently!'})
+class LogoutView(APIView):
+
+    def get(self, request):
+        logout(request)
+        return Response({'message': 'User Logout recently!'})
     
 class RegisterView(APIView):
     def get(self, request):
@@ -105,49 +105,3 @@ class BooksView(APIView):
         obj.delete()
         return Response({'message':'Data Deleted!'})
     
-
-@api_view(['GET', 'POST','PUT','PATCH','DELETE'])
-def home(request):
-    if request.method == 'GET':
-        obj= Person.objects.all()
-        serializer = PersonSerializers(obj, many= True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        data= request.data
-        serializer= PersonSerializers(data= data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors)
-    
-    elif request.method== 'PUT':
-        data= request.data
-        obj= Person.objects.get(id= data['id'])
-        print(obj)
-        serializer= PersonSerializers(obj, data= data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors)
-    
-    elif request.method== 'PATCH':
-        data= request.data
-        obj= Person.objects.get(id= data['id'])
-        serializer= PersonSerializers(obj, data= data, partial= True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors)
-    
-    else:
-        data= request.data
-        obj= Person.objects.get(id= data['id'])
-        obj.delete()
-        return Response({'message':'Data Deleted!'})
