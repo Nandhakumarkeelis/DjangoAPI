@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from django.views.decorators.csrf import csrf_protect
 from .models import *
 from .serializers import *
@@ -55,6 +56,7 @@ class RegisterView(APIView):
 
 class BooksView(APIView):
     permission_classes= [IsAuthenticated]
+    authentication_classes= [TokenAuthentication]
 
     def get(self, request):
         obj= Books.objects.all()
