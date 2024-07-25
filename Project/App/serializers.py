@@ -27,6 +27,7 @@ class Registerserializers(serializers.ModelSerializer):
                 raise serializers.ValidationError("Email is Already Taken!")
 
         return data
+
     def create(self, validated_data):
         user= User.objects.create(username= validated_data['username'], email= validated_data['email'], password= validated_data['password'])
         user.set_password(validated_data['password'])
