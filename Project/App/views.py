@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework import status
 from .models import *
 from .serializers import *
@@ -19,11 +21,14 @@ class LoginView(APIView):
         data= request.data
         serializer= Loginserializers(data= data)
         user= authenticate(username= data['username'], password= data['password'])
-        token,_= Token.objects.get_or_create(user= user)
+        refresh= RefreshToken.for_user(user)
         print(user)
         if user is not None:
             login(request, user)
-            return Response({'message': 'User Login Successfully!', 'token': str(token)}, status= status.HTTP_200_OK)
+            return Response({'message': 'User Login Successfully!', 
+                             'refresh': str(refresh),
+                             'access': str(refresh.access_token),
+                             }, status= status.HTTP_200_OK)
         
         else:
             return Response({'message': "Unauthorized User!"}, status= status.HTTP_401_UNAUTHORIZED)
@@ -58,7 +63,7 @@ class RegisterView(APIView):
 class BooksView(APIView):
 
     permission_classes= [IsAuthenticated]
-    authentication_classes= [TokenAuthentication]
+    authentication_classes= [JWTAuthentication]
 
     def get(self, request):
         obj= Books.objects.all()
